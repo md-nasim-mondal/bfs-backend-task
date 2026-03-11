@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Web Demo Client</title>
+    <script src="https://cdns.cloudflare.com/ajax/libs/socket.io/4.7.4/socket.io.js"></script>
+    <style>
+        body { font-family: sans-serif; text-align: center; padding: 50px; }
+        #qr-container { margin: 20px auto; min-height: 250px; }
+        #status { font-weight: bold; margin-top: 10px; color: #333; }
+        .success { color: green !important; }
+        .error { color: red !important; }
+    </style>
+</head>
+<body>
+    <h2>WhatsApp Backend - QR Authentication Demo</h2>
+    <div id="status">Connecting to server...</div>
+    <div id="qr-container">
+        <img id="qr-image" style="display: none; margin: 0 auto; border: 2px solid #ccc; border-radius: 8px;" alt="QR Code" />
+    </div>
+    
+    <script>
+        const socket = io('http://localhost:5000');
+        const statusDiv = document.getElementById('status');
+        const qrImage = document.getElementById('qr-image');
+
+        socket.on('connect', () => {
+            statusDiv.textContent = 'Connected to server. Waiting for QR Code...';
+        });
+
+        socket.on('qr', (data) => {
+            statusDiv.textContent = 'Scan the QR Code with your WhatsApp app!';
+            qrImage.src = data;
+            qrImage.style.display = 'block';
+        });
+
+        socket.on('ready', () => {
+            statusDiv.textContent = 'WhatsApp Client is READY! You can now send API requests.';
+            statusDiv.className = 'success';
+            qrImage.style.display = 'none';
+        });
+
+        socket.on('authenticated', () => {
+            statusDiv.textContent = 'Authentication Successful! Preparing client...';
+            statusDiv.className = 'success';
+            qrImage.style.display = 'none';
+        });
+
+        socket.on('auth_failure', (msg) => {
+            statusDiv.textContent = 'Authentication Failed: ' + msg.message;
+            statusDiv.className = 'error';
+        });
+
+        socket.on('disconnected', () => {
+            statusDiv.textContent = 'WhatsApp Client Disconnected!';
+            statusDiv.className = 'error';
+            qrImage.style.display = 'none';
+        });
+    </script>
+</body>
+</html>

@@ -1,6 +1,7 @@
 import cors from "cors";
 import express, { Request, Response } from "express";
 import rateLimit from "express-rate-limit";
+import path from "path";
 import { envVars } from "./app/config/env";
 import { globalErrorHandler } from "./app/middlewares/globalErrorHandler";
 import notFound from "./app/middlewares/notFound";
@@ -25,6 +26,9 @@ app.use(
 );
 
 app.use("/api", limiter);
+
+// Serve the QR demo client page at /client
+app.use("/client", express.static(path.join(__dirname, "../public")));
 
 app.use("/api/v1", router);
 

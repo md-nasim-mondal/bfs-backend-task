@@ -1,6 +1,7 @@
 import { Server } from "http";
 import app from "./app";
 import { envVars } from "./app/config/env";
+import { connectDB } from "./app/config/db";
 import { SocketService } from "./app/services/socket.service";
 import { WhatsAppService } from "./app/services/whatsapp.service";
 import { logger } from "./app/utils/logger";
@@ -9,6 +10,9 @@ let server: Server;
 
 const startServer = async () => {
   try {
+    // Connect to MongoDB first
+    await connectDB();
+
     server = app.listen(envVars.PORT, () => {
       logger.info(`Server is listening to port ${envVars.PORT}`);
     });

@@ -6,6 +6,7 @@ interface EnvConfig {
   PORT: string;
   NODE_ENV: "development" | "production";
   FRONTEND_URL: string;
+  DB_URL: string;
 }
 
 const loadEnvVariables = (): EnvConfig => {
@@ -13,6 +14,7 @@ const loadEnvVariables = (): EnvConfig => {
     "PORT",
     "NODE_ENV",
     "FRONTEND_URL",
+    "DB_URL",
   ];
 
   requiredEnvVariables.forEach((key) => {
@@ -25,6 +27,7 @@ const loadEnvVariables = (): EnvConfig => {
     PORT: process.env.PORT as string,
     NODE_ENV: process.env.NODE_ENV as "development" | "production",
     FRONTEND_URL: process.env.FRONTEND_URL as string,
+    DB_URL: process.env.DB_URL as string,
   };
 };
 

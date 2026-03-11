@@ -20,7 +20,7 @@ export class SocketService {
       logger.info(`🔌 Client connected: ${socket.id}`);
       
       // Emit current status to the newly connected client
-      // We use a lazy import to avoid circular dependency at module load time
+      // I have used a lazy import to avoid circular dependency at module load time
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const { WhatsAppService } = require("./whatsapp.service");
       try {

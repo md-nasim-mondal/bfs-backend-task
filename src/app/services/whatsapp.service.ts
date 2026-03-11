@@ -36,6 +36,11 @@ export class WhatsAppService {
     this.client.on("qr", async (qr) => {
       logger.info("QR Code received, scan it with WhatsApp!");
       try {
+        // Print QR code in terminal for easy scanning
+        const terminalQR = await qrcode.toString(qr, { type: "terminal", small: true });
+        console.log("\n" + terminalQR + "\n");
+
+        // Also send as image to browser clients via Socket.IO
         const qrImage = await qrcode.toDataURL(qr);
         SocketService.getInstance().emit("qr", qrImage);
       } catch (err) {

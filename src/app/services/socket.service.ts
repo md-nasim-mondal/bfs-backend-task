@@ -1,6 +1,7 @@
 import { Server as HttpServer } from "http";
 import { Server, Socket } from "socket.io";
 import { envVars } from "../config/env";
+import { logger } from "../utils/logger";
 
 export class SocketService {
   private static instance: SocketService;
@@ -16,10 +17,23 @@ export class SocketService {
     });
 
     this.io.on("connection", (socket: Socket) => {
-      console.log(`🔌 Client connected: ${socket.id}`);
+      logger.info(`🔌 Client connected: ${socket.id}`);
+      
+      // Emit current status to the newly connected client
+      // We use a lazy import to avoid circular dependency at module load time
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const { WhatsAppService } = require("./whatsapp.service");
+      try {
+        const status = WhatsAppService.getInstance().getStatus();
+        if (status.isReady) {
+          socket.emit("ready", { status: "ready" });
+        }
+      } catch {
+        // WhatsApp service not yet initialized, ignore
+      }
 
       socket.on("disconnect", () => {
-        console.log(`🔌 Client disconnected: ${socket.id}`);
+        logger.info(`🔌 Client disconnected: ${socket.id}`);
       });
     });
   }

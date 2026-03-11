@@ -32,6 +32,42 @@ const sendMessage = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getStatus = catchAsync(async (req: Request, res: Response) => {
+  const whatsappService = WhatsAppService.getInstance();
+  const status = whatsappService.getStatus();
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: status.isReady ? "WhatsApp Client is connected and ready." : "WhatsApp Client is not connected.",
+    data: status,
+  });
+});
+
+const logout = catchAsync(async (req: Request, res: Response) => {
+  const whatsappService = WhatsAppService.getInstance();
+
+  if (!whatsappService.getStatus().isReady) {
+    return sendResponse(res, {
+      statusCode: httpStatus.BAD_REQUEST,
+      success: false,
+      message: "WhatsApp Client is not connected. Nothing to logout.",
+      data: null,
+    });
+  }
+
+  await whatsappService.logout();
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "WhatsApp Client logged out successfully.",
+    data: null,
+  });
+});
+
 export const MessageController = {
   sendMessage,
+  getStatus,
+  logout,
 };

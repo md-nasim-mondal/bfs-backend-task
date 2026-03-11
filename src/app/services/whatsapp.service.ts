@@ -119,4 +119,23 @@ export class WhatsAppService {
       isReady: this.isReady,
     };
   }
+
+  public async logout(): Promise<void> {
+    if (this.isReady) {
+      await this.client.logout();
+      this.isReady = false;
+      logger.info("WhatsApp Client logged out successfully.");
+      
+      // Destroy old client and create a fresh one for re-authentication
+      await this.client.destroy();
+      this.client = new Client({
+        authStrategy: new LocalAuth(),
+        puppeteer: {
+          executablePath: "/usr/bin/google-chrome-stable",
+          args: ["--no-sandbox", "--disable-setuid-sandbox"],
+        },
+      });
+      this.initialize();
+    }
+  }
 }
